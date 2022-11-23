@@ -15,9 +15,8 @@ Showcase
   - OData Targeting @ UI
 
 References
-----------
-Used SAP Help, Blogs, various exploration
-OData – the best way to REST:     https://www.odata.org/
-SAP Community – Gateway:          https://community.sap.com/topics/gateway
-Introducing JSON (JavaScript Object Notation):    https://www.json.org/json-en.html
-The 10 commandments of ODATA performance:         https://blogs.sap.com/2016/07/23/odata-performance-10-commandments/
+  - Used SAP Help, Blogs, various exploration
+  - OData – the best way to REST:     https://www.odata.org/
+  - SAP Community – Gateway:          https://community.sap.com/topics/gateway
+  - Introducing JSON (JavaScript Object Notation):    https://www.json.org/json-en.html
+  - The 10 commandments of ODATA performance:         https://blogs.sap.com/2016/07/23/odata-performance-10-commandments/
