@@ -14,6 +14,16 @@ Live coding
 Showcase
   - OData Targeting @ UI
 
+GW Projects inside this repo and respective OData functionalities implemented with that
+  - ZMCBC_MEAL_AIRLINE	Meals -> Simple Query & Read
+  - ZMCBC_MEAL_AIRLINE1	Meals -> Query with client side paging, filtering
+  - ZMCBC_MEAL_AIRLINE2	Meals -> Query with sorting, searching
+  - ZMCBC_MEAL_AIRLINE3	Meals -> CUD Operations (Create, Update, Delete)
+  - ZMCBC_MEAL_AIRLINE4	Airlines to Meals - Association
+  - 
+  - ZMCBC_MEAL_AIRLINE6	Airline -> QR via mapping data source
+  - ZMCBC_MEAL_AIRLINE7	Airline to Meals Association via mapping data source
+
 References
   - Used SAP Help, Blogs, various exploration
   - OData – the best way to REST:     https://www.odata.org/
