@@ -19,9 +19,14 @@ define view ZMeals
        on smeal.carrid      = _slText.AirlineID
       and smeal.mealnumber  = _slText.MealNumber
       and _slText.Langu     = :p_suppl_langu 
+
+    association [1] to ZAirline as _airline
+      on $projection.AirlineID = _airline.AirlineID 
 {
   key smeal.carrid      as AirlineID,
   key smeal.mealnumber  as MealNumber,
       smeal.mealtype    as MealType,
-      coalesce( _lgText.Text, _slText.Text ) as Text
+      coalesce( _lgText.Text, _slText.Text ) as Text,
+      
+      _airline  // Make association public
 }

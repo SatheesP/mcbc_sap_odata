@@ -60,14 +60,14 @@ CLASS ZCL_MCBC_MEAL_AIRLINE3_DPC_EXT IMPLEMENTATION.
         EXPORTING
           message_container = lo_msgcont.
     ELSE.
-      ls_smeal = CORRESPONDING #( ls_meal ).
-      ls_smeal-carrid = ls_meal-airlineid.
+      ls_smeal = CORRESPONDING #( ls_meal MAPPING carrid = airlineid ).
+*      ls_smeal-carrid = ls_meal-airlineid.
 
       INSERT smeal FROM ls_smeal.
       IF sy-subrc = 0.
-        ls_smealt = CORRESPONDING #( ls_smeal ).
+        ls_smealt = CORRESPONDING #( ls_meal MAPPING carrid = airlineid ).
         ls_smealt-sprache = sy-langu.
-        ls_smealt-text = ls_meal-text.
+*        ls_smealt-text = ls_meal-text.
         MODIFY smealt FROM ls_smealt.
 
         er_entity = ls_meal.
@@ -156,7 +156,6 @@ CLASS ZCL_MCBC_MEAL_AIRLINE3_DPC_EXT IMPLEMENTATION.
 *-- Meals?$format=json&$inlinecount=allpages&$filter=AirlineID eq 'AA'
     DATA(where_cond) = io_tech_request_context->get_osql_where_clause_convert( ).
     search_cond = io_tech_request_context->get_search_string( ).
-    search_cond = |%{ search_cond }%|.
     DATA(sort_tab) = io_tech_request_context->get_orderby( ).
     DATA(sort_cond) = REDUCE string( INIT str = ``
                                      FOR row IN sort_tab
@@ -177,6 +176,8 @@ CLASS ZCL_MCBC_MEAL_AIRLINE3_DPC_EXT IMPLEMENTATION.
        ORDER BY (sort_cond)
         INTO CORRESPONDING FIELDS OF TABLE @lt_meals.
     ELSE.
+      search_cond = |%{ search_cond }%|.
+
       SELECT *
         FROM zmeals( p_logon_langu = @sy-langu, p_suppl_langu = 'D' )
        WHERE (where_cond)
@@ -203,9 +204,11 @@ CLASS ZCL_MCBC_MEAL_AIRLINE3_DPC_EXT IMPLEMENTATION.
     ELSE.
       from = from + 1.
 
-      LOOP AT lt_meals FROM from TO to ASSIGNING FIELD-SYMBOL(<fs_entity>).
-        APPEND <fs_entity> TO et_entityset.
-      ENDLOOP.
+*      LOOP AT lt_meals FROM from TO to ASSIGNING FIELD-SYMBOL(<fs_entity>).
+*        APPEND <fs_entity> TO et_entityset.
+*      ENDLOOP.
+
+      APPEND LINES OF lt_meals FROM from TO to TO et_entityset.
     ENDIF.
 
   ENDMETHOD.

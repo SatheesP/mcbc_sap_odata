@@ -168,9 +168,9 @@ lo_entity_set->set_creatable( abap_false ).
 lo_entity_set->set_updatable( abap_false ).
 lo_entity_set->set_deletable( abap_false ).
 
-lo_entity_set->set_pageable( abap_false ).
+lo_entity_set->set_pageable( abap_true ).
 lo_entity_set->set_addressable( abap_true ).
-lo_entity_set->set_has_ftxt_search( abap_false ).
+lo_entity_set->set_has_ftxt_search( abap_true ).
 lo_entity_set->set_subscribable( abap_false ).
 lo_entity_set->set_filter_required( abap_false ).
   endmethod.
@@ -201,30 +201,35 @@ lo_nav_property   type ref to /iwbep/if_mgw_odata_nav_prop.                     
 ***********************************************************************************************************************************
 
  lo_association = model->create_association(
-                            iv_association_name = 'AssocAirlineToMeal' "#EC NOTEXT
+                            iv_association_name = 'AssocAirlineToMeals' "#EC NOTEXT
                             iv_left_type        = 'Airline' "#EC NOTEXT
                             iv_right_type       = 'Meal' "#EC NOTEXT
                             iv_right_card       = 'M' "#EC NOTEXT
                             iv_left_card        = '1'  "#EC NOTEXT
                             iv_def_assoc_set    = abap_false ). "#EC NOTEXT
-* Referential constraint for association - AssocAirlineToMeal
+* Referential constraint for association - AssocAirlineToMeals
 lo_ref_constraint = lo_association->create_ref_constraint( ).
 lo_ref_constraint->add_property( iv_principal_property = 'AirlineID'   iv_dependent_property = 'AirlineID' ). "#EC NOTEXT
-lo_assoc_set = model->create_association_set( iv_association_set_name  = 'AssocAirlineToMealSet'                         "#EC NOTEXT
+lo_assoc_set = model->create_association_set( iv_association_set_name  = 'AssocAirlineToMealsSet'                         "#EC NOTEXT
                                               iv_left_entity_set_name  = 'Airlines'              "#EC NOTEXT
                                               iv_right_entity_set_name = 'Meals'             "#EC NOTEXT
-                                              iv_association_name      = 'AssocAirlineToMeal' ).                                 "#EC NOTEXT
+                                              iv_association_name      = 'AssocAirlineToMeals' ).                                 "#EC NOTEXT
 
 
 ***********************************************************************************************************************************
 *   NAVIGATION PROPERTIES
 ***********************************************************************************************************************************
 
+* Navigation Properties for entity - Meal
+lo_entity_type = model->get_entity_type( iv_entity_name = 'Meal' ). "#EC NOTEXT
+lo_nav_property = lo_entity_type->create_navigation_property( iv_property_name  = 'toAirline' "#EC NOTEXT
+                                                              iv_abap_fieldname = 'TOAIRLINE' "#EC NOTEXT
+                                                              iv_association_name = 'AssocAirlineToMeals' ). "#EC NOTEXT
 * Navigation Properties for entity - Airline
 lo_entity_type = model->get_entity_type( iv_entity_name = 'Airline' ). "#EC NOTEXT
 lo_nav_property = lo_entity_type->create_navigation_property( iv_property_name  = 'toMeals' "#EC NOTEXT
                                                               iv_abap_fieldname = 'TOMEALS' "#EC NOTEXT
-                                                              iv_association_name = 'AssocAirlineToMeal' ). "#EC NOTEXT
+                                                              iv_association_name = 'AssocAirlineToMeals' ). "#EC NOTEXT
   endmethod.
 
 
@@ -320,9 +325,9 @@ lo_entity_set->set_creatable( abap_false ).
 lo_entity_set->set_updatable( abap_false ).
 lo_entity_set->set_deletable( abap_false ).
 
-lo_entity_set->set_pageable( abap_false ).
+lo_entity_set->set_pageable( abap_true ).
 lo_entity_set->set_addressable( abap_true ).
-lo_entity_set->set_has_ftxt_search( abap_false ).
+lo_entity_set->set_has_ftxt_search( abap_true ).
 lo_entity_set->set_subscribable( abap_false ).
 lo_entity_set->set_filter_required( abap_false ).
   endmethod.
@@ -338,7 +343,7 @@ lo_entity_set->set_filter_required( abap_false ).
 *&---------------------------------------------------------------------*
 
 
-  CONSTANTS: lc_gen_date_time TYPE timestamp VALUE '20221122074512'.                  "#EC NOTEXT
+  CONSTANTS: lc_gen_date_time TYPE timestamp VALUE '20221214063947'.                  "#EC NOTEXT
   rv_last_modified = super->get_last_modified( ).
   IF rv_last_modified LT lc_gen_date_time.
     rv_last_modified = lc_gen_date_time.

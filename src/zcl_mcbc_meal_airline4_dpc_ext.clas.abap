@@ -30,9 +30,9 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
     io_tech_request_context->get_converted_keys( IMPORTING es_key_values = ls_airline ).
 
 *-- Reads a unique row based on keys passed in URI
-    SELECT SINGLE *
-      INTO CORRESPONDING FIELDS OF @er_entity
-      FROM zairline
+    SELECT SINGLE '000' as mandt, al~*
+      FROM zairline as al
+      INTO @er_entity
      WHERE airlineid = @ls_airline-airlineid.
 
   ENDMETHOD.
@@ -58,7 +58,6 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
 *-- Meals?$format=json&$inlinecount=allpages&$filter=AirlineID eq 'AA'
     DATA(where_cond) = io_tech_request_context->get_osql_where_clause_convert( ).
     search_cond = io_tech_request_context->get_search_string( ).
-    search_cond = |%{ search_cond }%|.
     DATA(sort_tab) = io_tech_request_context->get_orderby( ).
     DATA(sort_cond) = REDUCE string( INIT str = ``
                                      FOR row IN sort_tab
@@ -73,21 +72,23 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
 
 *-- Just a Query to get all rows of the entity
     IF search_cond IS INITIAL.
-      SELECT *
-        FROM zairline
+      SELECT '000' as mandt, al~*
+        FROM zairline as al
        WHERE (where_cond)
        ORDER BY (sort_cond)
-        INTO CORRESPONDING FIELDS OF TABLE @lt_airlines.
+        INTO TABLE @lt_airlines.
     ELSE.
-      SELECT *
-        FROM zairline
+      search_cond = |%{ search_cond }%|.
+
+      SELECT '000' as mandt, al~*
+        FROM zairline as al
        WHERE (where_cond)
          AND ( airlineid LIKE @search_cond(4) OR
                name LIKE @search_cond(22) OR
                currencycode LIKE @search_cond(7)
              )
        ORDER BY (sort_cond)
-        INTO CORRESPONDING FIELDS OF TABLE @lt_airlines.
+        INTO TABLE @lt_airlines.
     ENDIF.
 
 *-- Client side paging
@@ -104,9 +105,10 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
     ELSE.
       from = from + 1.
 
-      LOOP AT lt_airlines FROM from TO to ASSIGNING FIELD-SYMBOL(<fs_entity>).
-        APPEND <fs_entity> TO et_entityset.
-      ENDLOOP.
+**      LOOP AT lt_airlines FROM from TO to ASSIGNING FIELD-SYMBOL(<fs_entity>).
+**        APPEND <fs_entity> TO et_entityset.
+**      ENDLOOP.
+      APPEND LINES OF lt_airlines FROM from TO to TO et_entityset.
     ENDIF.
 
   ENDMETHOD.
@@ -154,14 +156,12 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
         EXPORTING
           message_container = lo_msgcont.
     ELSE.
-      ls_smeal = CORRESPONDING #( ls_meal ).
-      ls_smeal-carrid = ls_meal-airlineid.
+      ls_smeal = CORRESPONDING #( ls_meal MAPPING carrid = airlineid ).
 
       INSERT smeal FROM ls_smeal.
       IF sy-subrc = 0.
-        ls_smealt = CORRESPONDING #( ls_smeal ).
+        ls_smealt = CORRESPONDING #( ls_meal MAPPING carrid = airlineid ).
         ls_smealt-sprache = sy-langu.
-        ls_smealt-text = ls_meal-text.
         MODIFY smealt FROM ls_smealt.
 
         er_entity = ls_meal.
@@ -250,7 +250,6 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
 *-- Meals?$format=json&$inlinecount=allpages&$filter=AirlineID eq 'AA'
     DATA(where_cond) = io_tech_request_context->get_osql_where_clause_convert( ).
     search_cond = io_tech_request_context->get_search_string( ).
-    search_cond = |%{ search_cond }%|.
     DATA(sort_tab) = io_tech_request_context->get_orderby( ).
     DATA(sort_cond) = REDUCE string( INIT str = ``
                                      FOR row IN sort_tab
@@ -285,6 +284,8 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
        ORDER BY (sort_cond)
         INTO CORRESPONDING FIELDS OF TABLE @lt_meals.
     ELSE.
+      search_cond = |%{ search_cond }%|.
+
       SELECT *
         FROM zmeals( p_logon_langu = @sy-langu, p_suppl_langu = 'D' )
        WHERE (where_cond)
@@ -311,9 +312,11 @@ CLASS ZCL_MCBC_MEAL_AIRLINE4_DPC_EXT IMPLEMENTATION.
     ELSE.
       from = from + 1.
 
-      LOOP AT lt_meals FROM from TO to ASSIGNING FIELD-SYMBOL(<fs_entity>).
-        APPEND <fs_entity> TO et_entityset.
-      ENDLOOP.
+**      LOOP AT lt_meals FROM from TO to ASSIGNING FIELD-SYMBOL(<fs_entity>).
+**        APPEND <fs_entity> TO et_entityset.
+**      ENDLOOP.
+
+      APPEND LINES OF lt_meals FROM from TO to TO et_entityset.
     ENDIF.
 
   ENDMETHOD.
